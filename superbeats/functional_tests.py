@@ -15,7 +15,7 @@ class NewBeatTest(unittest.TestCase):
 
         # You see heading and title
         self.assertIn('Superbeats', self.browser.title)
-        self.fail()
+        self.fail('Test end')
 
         # superbeats offers you to enter your first beat title
         # You enter beat title and press enter. Page refreshes
