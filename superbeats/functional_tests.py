@@ -1,6 +1,8 @@
 from selenium import webdriver
 import unittest
-
+from selenium.webdriver.common import keys
+import time
+import unittest
 
 class NewBeatTest(unittest.TestCase):
     def setUp(self):
@@ -15,12 +17,25 @@ class NewBeatTest(unittest.TestCase):
 
         # You see heading and title
         self.assertIn('Superbeats', self.browser.title)
-        self.fail('Test end')
+        header_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertIn('Superbeats', header_text)
 
         # superbeats offers you to enter your first beat title
-        # You enter beat title and press enter. Page refreshes
-        # and you see thhe beat title on the page
+        input_box = self.browser.find_element_by_id('new_beat_input')
+        self.assertEqual('Enter new beat name',
+                         input_box.get_attribute('placeholder'))
 
+        # You enter beat title and press enter. Page refreshes
+        # and you see the beat title on the page
+        input_box.send_keys('Saawhitelife - Sin City Soul')
+        input_box.send_keys(keys.ENTER)
+        time.sleep(1)
+
+        browser.find_elements_by_tag_name('tr')
+        self.assertIn(
+            any(row.text == '1: Saawhitelife - Sin City Soul' for row in rows)
+        )
+        self.fail('Test end')
         # superbeats still offer to enter another beat name
         # You enter second beat name and press enter
 
