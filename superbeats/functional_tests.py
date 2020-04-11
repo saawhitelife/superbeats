@@ -1,6 +1,6 @@
 from selenium import webdriver
 import unittest
-from selenium.webdriver.common import keys
+from selenium.webdriver.common.keys import Keys
 import time
 import unittest
 
@@ -21,19 +21,21 @@ class NewBeatTest(unittest.TestCase):
         self.assertIn('Superbeats', header_text)
 
         # superbeats offers you to enter your first beat title
-        input_box = self.browser.find_element_by_id('new_beat_input')
+        input_box = self.browser.find_element_by_id('id_new_beat_input')
         self.assertEqual('Enter new beat name',
                          input_box.get_attribute('placeholder'))
 
         # You enter beat title and press enter. Page refreshes
         # and you see the beat title on the page
         input_box.send_keys('Saawhitelife - Sin City Soul')
-        input_box.send_keys(keys.ENTER)
+        input_box.send_keys(Keys.ENTER)
         time.sleep(1)
 
-        browser.find_elements_by_tag_name('tr')
-        self.assertIn(
-            any(row.text == '1: Saawhitelife - Sin City Soul' for row in rows)
+        self.browser.find_element_by_id('id_beats_table')
+        rows = self.browser.find_elements_by_tag_name('tr')
+        self.assertTrue(
+            any(row.text == '1: Saawhitelife - Sin City Soul' for row in rows),
+            'New beat is not in the table'
         )
         self.fail('Test end')
         # superbeats still offer to enter another beat name
