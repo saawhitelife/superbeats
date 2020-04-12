@@ -31,18 +31,22 @@ class NewBeatTest(unittest.TestCase):
         input_box.send_keys(Keys.ENTER)
         time.sleep(1)
 
-        self.browser.find_element_by_id('id_beats_table')
-        rows = self.browser.find_elements_by_tag_name('tr')
-        self.assertTrue(
-            any(row.text == '1: Saawhitelife - Sin City Soul' for row in rows),
-            'New beat is not in the table'
-        )
-        self.fail('Test end')
+        table = self.browser.find_element_by_id('id_beats_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn('1: Saawhitelife - Sin City Soul', [row.text for row in rows])
+
         # superbeats still offer to enter another beat name
         # You enter second beat name and press enter
-
+        input_box = self.browser.find_element_by_id('id_new_beat_input')
+        input_box.send_keys('Saawhitelife - Grimoire')
+        input_box.send_keys(Keys.ENTER)
+        time.sleep(1)
         # Page refreshes and both beats are now in the list
-
+        table = self.browser.find_element_by_id('id_beats_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn('1: Saawhitelife - Sin City Soul', [row.text for row in rows])
+        self.assertIn('2: Grimoire - Sin City Soul', [row.text for row in rows])
+        self.fail('Test end')
         # You see generated link for the list. The site
         # stored it for you
 
