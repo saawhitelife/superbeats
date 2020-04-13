@@ -1,7 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from beats.models import Beat
 
 # Create your views here.
 def home_page(request):
-    return render(request, 'home.html',
-                  {'new_beat_title' : request.POST.get('beat_title', '')})
+    if request.method == 'POST':
+        Beat.objects.create(title=request.POST['beat_title'])
+        return redirect('/')
+    else:
+        beats = Beat.objects.all()
+        return render(request, 'home.html', {'beats': beats})

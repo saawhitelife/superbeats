@@ -10,7 +10,9 @@
     {% csrf_token %}
 </form>
 <table id="id_beats_table">
-    <tr><td>1: {{ new_beat_title }}</td></tr>
+    {% for beat in beats %}
+    <tr><td>{{ forloop.counter }}: {{ beat.title }}</td></tr>
+    {% endfor %}
 </table>
 </body>
 </html>

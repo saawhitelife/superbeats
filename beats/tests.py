@@ -13,8 +13,28 @@ class HomePageTest(TestCase):
 
     def test_add_new_beat_POST_request(self):
         response = self.client.post('/', data={'beat_title': 'Saawhitelife - Sin City Soul'})
-        self.assertIn('Saawhitelife - Sin City Soul', response.content.decode())
-        self.assertTemplateUsed(response, 'home.html')
+
+        self.assertEqual(Beat.objects.count(), 1)
+        new_beat = Beat.objects.first()
+        self.assertEqual(new_beat.title, 'Saawhitelife - Sin City Soul')
+
+    def test_redirects_after_post_request(self):
+        response = self.client.post('/', data={'beat_title': 'Saawhitelife - Sin City Soul'})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
+
+    def test_save_beat_only_on_post_request(self):
+        self.client.get('/')
+        self.assertEqual(Beat.objects.count(), 0)
+
+    def test_display_all_beats(self):
+        beat_1 = Beat.objects.create(title='Beat 1')
+        beat_2 = Beat.objects.create(title='Beat 2')
+
+        response = self.client.get('/')
+
+        self.assertIn('Beat 1', response.content.decode())
+        self.assertIn('Beat 2', response.content.decode())
 
 class BeatModelTest(TestCase):
     def test_can_save_and_retrieve_beats(self):
