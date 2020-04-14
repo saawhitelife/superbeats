@@ -3,8 +3,9 @@ import unittest
 from selenium.webdriver.common.keys import Keys
 import time
 import unittest
+from django.test import LiveServerTestCase
 
-class NewBeatTest(unittest.TestCase):
+class NewBeatTest(LiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Firefox()
 
@@ -18,7 +19,7 @@ class NewBeatTest(unittest.TestCase):
 
     def test_can_start_a_list_of_beats_and_access_it_via_url(self):
         # You visit superbeats
-        self.browser.get('http:/localhost:8000')
+        self.browser.get(self.live_server_url)
 
         # You see heading and title
         self.assertIn('Superbeats', self.browser.title)
