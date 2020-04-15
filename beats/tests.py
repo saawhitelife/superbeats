@@ -21,7 +21,7 @@ class HomePageTest(TestCase):
     def test_redirects_after_post_request(self):
         response = self.client.post('/', data={'beat_title': 'Saawhitelife - Sin City Soul'})
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/')
+        self.assertEqual(response['location'], '/the-unique-url')
 
     def test_save_beat_only_on_post_request(self):
         self.client.get('/')
