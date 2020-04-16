@@ -18,16 +18,6 @@ class HomePageTest(TestCase):
         new_beat = Beat.objects.first()
         self.assertEqual(new_beat.title, 'Saawhitelife - Sin City Soul')
 
-    def test_redirects_after_post_request(self):
-        response = self.client.post('/', data={'beat_title': 'Saawhitelife - Sin City Soul'})
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/beats/the-unique-url')
-
-    def test_save_beat_only_on_post_request(self):
-        self.client.get('/')
-        self.assertEqual(Beat.objects.count(), 0)
-
-
 class BeatModelTest(TestCase):
     def test_can_save_and_retrieve_beats(self):
         first_beat = Beat()
@@ -58,3 +48,14 @@ class BeatsViewTest(TestCase):
     def test_use_beats_template(self):
         response = self.client.get('/beats/the-unique-url/')
         self.assertTemplateUsed(response, 'beats.html')
+
+class NewBeatListTest(TestCase):
+    def test_add_new_beat_POST_request(self):
+        self.client.post('/beat_list/new', data={'beat_title': 'Saawhitelife - Sin City Soul'})
+        self.assertEqual(Beat.objects.count(), 1)
+        new_beat = Beat.objects.first()
+        self.assertEqual(new_beat.title, 'Saawhitelife - Sin City Soul')
+
+    def test_redirects_after_post_request(self):
+        response = self.client.post('/beat_list/new', data={'beat_title': 'Saawhitelife - Sin City Soul'})
+        self.assertRedirects(response, '/beats/the-unique-url/')

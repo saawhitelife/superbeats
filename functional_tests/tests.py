@@ -95,7 +95,6 @@ class NewBeatTest(LiveServerTestCase):
         self.assertNotIn('Saawhitelife - Grimoire', page_text)
 
         # JayZ enters enter his beat title
-        time.sleep(10)
         input_box = self.browser.find_element_by_id('id_new_beat_input')
         input_box.send_keys('JayZ - Dirt Off Your Shoulders')
 
