@@ -90,12 +90,13 @@ class NewBeatTest(LiveServerTestCase):
         self.browser.get(self.live_server_url)
 
         # JayZ doesnt see Saawhitelife's beats
-        page_text = self.browser.find_elements_by_tag_name('body').text
+        page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Saawhitelife - Sin City Soul', page_text)
         self.assertNotIn('Saawhitelife - Grimoire', page_text)
 
         # JayZ enters enter his beat title
-        input_box = self.browser.find_elements_by_tag_name('id_new_beat_input')
+        time.sleep(10)
+        input_box = self.browser.find_element_by_id('id_new_beat_input')
         input_box.send_keys('JayZ - Dirt Off Your Shoulders')
 
         # JayZ presses enter and sees his beat on the page
@@ -106,16 +107,15 @@ class NewBeatTest(LiveServerTestCase):
         jayz_beat_list_url = self.browser.current_url
 
         # It is a valid URL
-        self.assertRegex(jayz_beat_list_url, '/lists/.+')
+        self.assertRegex(jayz_beat_list_url, '/beats/.+')
 
         # Saawhitelife's list url doesnt equal JayZ's
         self.assertEqual(jayz_beat_list_url, saawhitelife_beat_list_url)
 
         # Still no saawhitelife's beats on the page
-        page_text = self.browser.find_elements_by_tag_name('body').text
+        page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Saawhitelife - Sin City Soul', page_text)
         self.assertNotIn('Saawhitelife - Grimoire', page_text)
-
 
 
 if __name__ == '__main__':

@@ -6,7 +6,10 @@ from beats.models import Beat
 def home_page(request):
     if request.method == 'POST':
         Beat.objects.create(title=request.POST['beat_title'])
-        return redirect('/')
+        return redirect('/beats/the-unique-url/')
     else:
-        beats = Beat.objects.all()
-        return render(request, 'home.html', {'beats': beats})
+        return render(request, 'home.html')
+
+def beat_list(request):
+    beats = Beat.objects.all()
+    return render(request, 'beats.html', {'beats': beats})

@@ -4,10 +4,15 @@
     <title>Superbeats</title>
 </head>
 <body>
-<h1>Welcome to Superbeats. Please enter your beat title.</h1>
+<h1>Welcome to Superbeats</h1>
 <form method="POST" action="/">
     <input name="beat_title" id="id_new_beat_input" placeholder="Enter new beat name">
     {% csrf_token %}
 </form>
+<table id="id_beats_table">
+    {% for beat in beats %}
+    <tr><td>{{ forloop.counter }}: {{ beat.title }}</td></tr>
+    {% endfor %}
+</table>
 </body>
 </html>
