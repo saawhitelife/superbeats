@@ -19,7 +19,8 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^$', views.home_page, name='home'),
-    url(r'^beats/the-unique-url/$', views.beat_list, name='beat_list'),
-    url(r'^beat_list/new$', views.new_beat_list, name='new_beat_list')
+    url(r'^beat_list/(\d+)/$', views.beat_list, name='beat_list'),
+    url(r'^beat_list/new$', views.new_beat_list, name='new_beat_list'),
+    url(r'^beat_list/(\d+)/add_beat', views.add_beat, name='add_beat')
     # url(r'^admin/', admin.site.urls),
 ]
