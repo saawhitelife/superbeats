@@ -1,4 +1,5 @@
-from beats import views
+from beats import views as beat_views
+from beats import urls as beat_urls
 """superbeats URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -14,13 +15,11 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^$', views.home_page, name='home'),
-    url(r'^beat_list/(\d+)/$', views.beat_list, name='beat_list'),
-    url(r'^beat_list/new$', views.new_beat_list, name='new_beat_list'),
-    url(r'^beat_list/(\d+)/add_beat', views.add_beat, name='add_beat')
+    url(r'^$', beat_views.home_page, name='home'),
+    url(r'^beat_list/', include(beat_urls)),
     # url(r'^admin/', admin.site.urls),
 ]
