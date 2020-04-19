@@ -1,13 +1,5 @@
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Superbeats</title>
-</head>
-<body>
-<h1>Welcome to Superbeats. Please enter your beat title.</h1>
-<form method="POST" action="/beat_list/new">
-    <input name="beat_title" id="id_new_beat_input" placeholder="Enter new beat name">
-    {% csrf_token %}
-</form>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block header_text %}Welcome to Superbeats. Please enter your beat title.{% endblock %}
+
+{% block form_action %}/beat_list/new{% endblock %}
