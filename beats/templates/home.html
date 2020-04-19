@@ -6,7 +6,9 @@
 <body>
 <h1>Welcome to Superbeats. Please enter your beat title.</h1>
 <form method="POST" action="/beat_list/new">
-    <input name="beat_title" id="id_new_beat_input" placeholder="Enter new beat name">
+    <p style="text-align: center">
+        <input name="beat_title" id="id_new_beat_input" placeholder="Enter new beat name">
+    </p>
     {% csrf_token %}
 </form>
 </body>

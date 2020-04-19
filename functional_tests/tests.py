@@ -29,6 +29,27 @@ class NewBeatTest(LiveServerTestCase):
                     raise e
                 time.sleep(0.5)
 
+    def test_layout_and_styling(self):
+        # Saawhitelife visits superbeats
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
+
+        # He sees that input field is centered
+        input_box = self.browser.find_element_by_id('id_new_beat_input')
+        self.assertAlmostEqual(input_box.location['x'] + input_box.size['width'] / 2,
+                               512,
+                               delta=10)
+        # Saawhitelife enters his beat title and gets onto his
+        # beat list page
+        input_box.send_keys('Saawhitelife - Fata Morgana')
+        input_box.send_keys(Keys.ENTER)
+        self.wait_for_rows_in_table('1: Saawhitelife - Fata Morgana')
+
+        # Saa sees that the input field is well-centered too there
+        input_box = self.browser.find_element_by_id('id_new_beat_input')
+        self.assertAlmostEqual(input_box.location['x'] + input_box.size['width'] / 2,
+                               512,
+                               delta=10)
 
     def test_one_user_can_start_a_list_of_beats_and_access_it_via_url(self):
         # You visit superbeats
@@ -82,7 +103,7 @@ class NewBeatTest(LiveServerTestCase):
         saawhitelife_beat_list_url = self.browser.current_url
 
         # ... and it is a valid URL
-        self.assertRegex(saawhitelife_beat_list_url, '/beats/.+')
+        self.assertRegex(saawhitelife_beat_list_url, '/beat_list/.+')
 
         # Now JayZ comes to visit superbeats
         self.browser.quit()
@@ -106,10 +127,10 @@ class NewBeatTest(LiveServerTestCase):
         jayz_beat_list_url = self.browser.current_url
 
         # It is a valid URL
-        self.assertRegex(jayz_beat_list_url, '/beats/.+')
+        self.assertRegex(jayz_beat_list_url, '/beat_list/.+')
 
         # Saawhitelife's list url doesnt equal JayZ's
-        self.assertEqual(jayz_beat_list_url, saawhitelife_beat_list_url)
+        self.assertNotEqual(jayz_beat_list_url, saawhitelife_beat_list_url)
 
         # Still no saawhitelife's beats on the page
         page_text = self.browser.find_element_by_tag_name('body').text
