@@ -5,7 +5,7 @@
 {% block form_action %}/beat_list/{{ beat_list.id }}/add_beat{% endblock %}
 
 {% block table %}
-<table id="id_beats_table">
+<table id="id_beats_table" class="table">
     {% for beat in beat_list.beat_set.all %}
     <tr><td>{{ forloop.counter }}: {{ beat.title }}</td></tr>
     {% endfor %}

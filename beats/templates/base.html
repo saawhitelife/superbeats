@@ -1,15 +1,34 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Superbeats</title>
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/base.css" rel="stylesheet">
 </head>
 <body>
-<h1>{% block header_text %}{% endblock %}</h1>
-<form method="POST" action="{% block form_action %}{% endblock %}">
-    <input name="beat_title" id="id_new_beat_input" placeholder="Enter new beat name">
-    {% csrf_token %}
-    {% block table %}
-    {% endblock %}
-</form>
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3 jumbotron">
+            <div class="text-center">
+                <h1>{% block header_text %}{% endblock %}</h1>
+                <form method="POST" action="{% block form_action %}{% endblock %}">
+                <input class="form-control input-lg" name="beat_title" id="id_new_beat_input" placeholder="Enter new beat name"/>
+                {% csrf_token %}
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="coll-md-6 col-md-offset-3">
+            {% block table %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
