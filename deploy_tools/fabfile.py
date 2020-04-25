@@ -20,7 +20,7 @@ def _create_directory_structure_if_necessary(site_folder):
         run(f'mkdir -p {site_folder}/{subfolder}')
 
 def _get_latest_source(source_folder):
-    if exists(source_folder + '.git'):
+    if exists(source_folder + '/.git'):
         run(f'cd {source_folder} && git fetch')
     else:
         run(f'git clone {REPO_URL} {source_folder}')
@@ -31,9 +31,9 @@ def _update_settings(source_folder, site_name):
     settings_path = source_folder + '/superbeats/settings.py'
     sed(settings_path, "DEBUG = True", "DEBUG = False")
     sed(settings_path,
-        "ALLOWED_HOSTS =.+$",
-        f"ALLOWED_HOSTS = ['{site_name}']")
-    secret_file = source_folder + '/superbeatss/secret_key.py'
+        'ALLOWED_HOSTS =.+$',
+        f'ALLOWED_HOSTS = ["{site_name}"]')
+    secret_file = source_folder + '/superbeats/secret_key.py'
     if not exists(secret_file):
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
         key = ''.join(random.SystemRandom().choice(chars) for _ in range(50))
@@ -52,5 +52,5 @@ def _update_static_files(source_folder):
 
 def _update_database(source_folder):
     run(f'cd {source_folder}'
-        '../virtualenv/bin/python manage.py migrate --noinput'
+        '&& ../virtualenv/bin/python manage.py migrate --noinput'
     )
