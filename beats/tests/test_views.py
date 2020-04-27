@@ -58,6 +58,11 @@ class NewBeatListTest(TestCase):
         new_beat_list = BeatList.objects.first()
         self.assertRedirects(response, f'/beat_list/{new_beat_list.id}/')
 
+    def test_empty_items_arent_saved(self):
+        self.client.post('/beat_list/new', data={'beat_title': ''})
+        self.assertEqual(BeatList.objects.count(), 0)
+        self.assertEqual(Beat.objects.count(), 0)
+
 class NewBeatTest(TestCase):
     def test_can_add_beat_to_an_existing_beat_list(self):
         beat_list = BeatList.objects.create()
@@ -80,3 +85,12 @@ class NewBeatTest(TestCase):
                          data={'beat_title': 'Beat for adding beats to a list test'})
 
         self.assertRedirects(response, f'/beat_list/{beat_list.id}/')
+
+    def test_validations_errors_a_passed_to_template(self):
+        response = self.client.post('/beat_list/new', data={'beat_title': ''})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'home.html')
+
+        expected_error = 'You cant sumbit an empty beat'
+        self.assertContains(response, expected_error)

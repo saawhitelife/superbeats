@@ -1,5 +1,6 @@
 from django.test import TestCase
 from beats.models import Beat, BeatList
+from django.core.exceptions import ValidationError
 
 
 class BeatAndBeatListModelsTest(TestCase):
@@ -29,3 +30,10 @@ class BeatAndBeatListModelsTest(TestCase):
         self.assertEqual(beats[0].beat_list, beat_list)
         self.assertEqual(beats[1].title, 'Saawhitelife - Grimoire')
         self.assertEqual(beats[1].beat_list, beat_list)
+
+    def test_cannot_save_empty_beats(self):
+        beat_list = BeatList.objects.create()
+        beat = Beat.objects.create(beat_list=beat_list, title='')
+        with self.assertRaises(ValidationError):
+            beat.save()
+            beat.full_clean()
