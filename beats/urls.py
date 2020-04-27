@@ -20,6 +20,5 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^(\d+)/$', views.beat_list, name='beat_list'),
     url(r'^new$', views.new_beat_list, name='new_beat_list'),
-    url(r'^(\d+)/add_beat', views.add_beat, name='add_beat')
     # url(r'^admin/', admin.site.urls),
 ]

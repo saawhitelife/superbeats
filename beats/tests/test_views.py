@@ -46,6 +46,46 @@ class BeatsViewTest(TestCase):
         response = self.client.get(f'/beat_list/{beat_list.id}/')
         self.assertEqual(response.context['beat_list'], beat_list)
 
+    def test_can_add_beat_to_an_existing_beat_list(self):
+        beat_list = BeatList.objects.create()
+        another_beat_list = BeatList.objects.create()
+
+        self.client.post(f'/beat_list/{beat_list.id}/',
+                data={'beat_title': 'Beat for adding beats to a list test'})
+
+        self.assertEqual(Beat.objects.count(), 1)
+
+        new_beat = Beat.objects.first()
+        self.assertEqual(new_beat.title, 'Beat for adding beats to a list test')
+        self.assertEqual(new_beat.beat_list, beat_list)
+
+    def test_validations_errors_a_passed_to_template(self):
+        response = self.client.post('/beat_list/new', data={'beat_title': ''})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'home.html')
+        expected_error = 'You cant submit an empty beat'
+        self.assertContains(response, expected_error)
+
+    def test_validation_errors_end_up_on_beat_list_page(self):
+        beat_list = BeatList.objects.create()
+        response = self.client.post(f'/beat_list/{beat_list.id}/',
+                         data={'beat_title': ''})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'beats.html')
+        self.assertContains(response, 'You cant submit an empty beat')
+
+
+    def test_post_redirects_to_beat_list_view(self):
+        beat_list = BeatList.objects.create()
+        another_beat_list = BeatList.objects.create()
+
+        response = self.client.post(f'/beat_list/{beat_list.id}/',
+                         data={'beat_title': 'Beat for adding beats to a list test'})
+
+        self.assertRedirects(response, f'/beat_list/{beat_list.id}/')
+
 class NewBeatListTest(TestCase):
     def test_add_new_beat_POST_request(self):
         self.client.post('/beat_list/new', data={'beat_title': 'Saawhitelife - Sin City Soul'})
@@ -62,35 +102,3 @@ class NewBeatListTest(TestCase):
         self.client.post('/beat_list/new', data={'beat_title': ''})
         self.assertEqual(BeatList.objects.count(), 0)
         self.assertEqual(Beat.objects.count(), 0)
-
-class NewBeatTest(TestCase):
-    def test_can_add_beat_to_an_existing_beat_list(self):
-        beat_list = BeatList.objects.create()
-        another_beat_list = BeatList.objects.create()
-
-        self.client.post(f'/beat_list/{beat_list.id}/add_beat',
-                data={'beat_title': 'Beat for adding beats to a list test'})
-
-        self.assertEqual(Beat.objects.count(), 1)
-
-        new_beat = Beat.objects.first()
-        self.assertEqual(new_beat.title, 'Beat for adding beats to a list test')
-        self.assertEqual(new_beat.beat_list, beat_list)
-
-    def test_redirects_to_beat_list_view(self):
-        beat_list = BeatList.objects.create()
-        another_beat_list = BeatList.objects.create()
-
-        response = self.client.post(f'/beat_list/{beat_list.id}/add_beat',
-                         data={'beat_title': 'Beat for adding beats to a list test'})
-
-        self.assertRedirects(response, f'/beat_list/{beat_list.id}/')
-
-    def test_validations_errors_a_passed_to_template(self):
-        response = self.client.post('/beat_list/new', data={'beat_title': ''})
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'home.html')
-
-        expected_error = 'You cant sumbit an empty beat'
-        self.assertContains(response, expected_error)

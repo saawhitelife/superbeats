@@ -1,6 +1,7 @@
 from selenium.webdriver.common.keys import Keys
 from unittest import skip
 from .base import FunctionalTest
+import time
 
 class ItemValidationTest(FunctionalTest):
     def test_cannot_add_empty_list_items(self):
@@ -32,5 +33,6 @@ class ItemValidationTest(FunctionalTest):
             ))
         # He can fix it anyway
         self.browser.find_element_by_id('id_new_beat_input').send_keys('Saawhitelife - Wah me!')
+        self.browser.find_element_by_id('id_new_beat_input').send_keys(Keys.ENTER)
         self.wait_for_rows_in_table('1: Saawhitelife - Fata Morgana')
         self.wait_for_rows_in_table('2: Saawhitelife - Wah me!')

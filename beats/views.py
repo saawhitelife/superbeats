@@ -10,7 +10,17 @@ def home_page(request):
 
 def beat_list(request, beat_list_id):
     beat_list = BeatList.objects.get(id=beat_list_id)
-    return render(request, 'beats.html', {'beat_list': beat_list})
+    error = ''
+    if request.method == 'POST':
+        try:
+            beat = Beat(title=request.POST['beat_title'], beat_list=beat_list)
+            beat.full_clean()
+            beat.save()
+            return redirect(f'/beat_list/{beat_list.id}/')
+        except ValidationError:
+            error = 'You cant submit an empty beat'
+    return render(request, 'beats.html', {'beat_list': beat_list,
+                                          'error': error})
 
 
 def new_beat_list(request):
@@ -24,9 +34,4 @@ def new_beat_list(request):
         error = 'You cant submit an empty beat'
         return render(request, 'home.html',
                       {'error': error})
-    return redirect(f'/beat_list/{beat_list.id}/')
-
-def add_beat(request, beat_list_id):
-    beat_list = BeatList.objects.get(id=beat_list_id)
-    Beat.objects.create(beat_list=beat_list, title=request.POST['beat_title'])
     return redirect(f'/beat_list/{beat_list.id}/')
