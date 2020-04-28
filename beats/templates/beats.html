@@ -2,7 +2,7 @@
 
 {% block header_text %}Welcome to Superbeats{% endblock %}
 
-{% block form_action %}/beat_list/{{ beat_list.id }}/{% endblock %}
+{% block form_action %}{%url 'beat_list' beat_list.id %}{% endblock %}
 
 {% block table %}
 <table id="id_beats_table" class="table">

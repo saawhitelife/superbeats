@@ -37,3 +37,7 @@ class BeatAndBeatListModelsTest(TestCase):
         with self.assertRaises(ValidationError):
             beat.save()
             beat.full_clean()
+
+    def test_get_absolute_url(self):
+        beat_list = BeatList.objects.create()
+        self.assertEqual(beat_list.get_absolute_url(), f'/beat_list/{beat_list.id}/')
