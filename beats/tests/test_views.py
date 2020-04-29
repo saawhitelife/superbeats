@@ -1,5 +1,6 @@
 from django.test import TestCase
 from beats.models import Beat, BeatList
+from beats.forms import BeatForm
 
 # Create your tests here.
 
@@ -15,6 +16,10 @@ class HomePageTest(TestCase):
         self.assertEqual(Beat.objects.count(), 1)
         new_beat = Beat.objects.first()
         self.assertEqual(new_beat.title, 'Saawhitelife - Sin City Soul')
+
+    def test_home_page_uses_correct_form_model(self):
+        response = self.client.get('/')
+        self.assertEqual(response.context['form'], BeatForm)
 
 
 class BeatsViewTest(TestCase):

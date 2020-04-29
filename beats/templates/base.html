@@ -16,8 +16,8 @@
             <div class="text-center">
                 <h1>{% block header_text %}{% endblock %}</h1>
                 <form method="POST" action="{% block form_action %}{% endblock %}">
-                <input class="form-control input-lg" name="beat_title" id="id_new_beat_input" placeholder="Enter new beat name"/>
-                {% csrf_token %}
+                    {{ form.text }}
+                    {% csrf_token %}
                     {% if error %}
                     <div class="form-group has-error">
                         <span class="help-block">{{ error }}</span>

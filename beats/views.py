@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from beats.models import Beat, BeatList
+from beats.forms import BeatForm
 from django.core.exceptions import ValidationError
 
 
 def home_page(request):
-        return render(request, 'home.html')
+        return render(request, 'home.html', {
+            'form': BeatForm()
+        })
 
 
 def beat_list(request, beat_list_id):
