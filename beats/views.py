@@ -16,7 +16,7 @@ def beat_list(request, beat_list_id):
     error = ''
     if request.method == 'POST':
         try:
-            beat = Beat(title=request.POST['beat_title'], beat_list=beat_list)
+            beat = Beat(title=request.POST['title'], beat_list=beat_list)
             beat.full_clean()
             beat.save()
             return redirect(beat_list)
@@ -28,7 +28,7 @@ def beat_list(request, beat_list_id):
 
 def new_beat_list(request):
     beat_list = BeatList.objects.create()
-    beat = Beat.objects.create(title=request.POST['beat_title'], beat_list=beat_list)
+    beat = Beat.objects.create(title=request.POST['title'], beat_list=beat_list)
     try:
         beat.full_clean()
         beat.save()

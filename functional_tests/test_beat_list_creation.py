@@ -13,7 +13,7 @@ class NewBeatTest(FunctionalTest):
         self.assertIn('Superbeats', header_text)
 
         # superbeats offers you to enter your first beat title
-        input_box = self.browser.find_element_by_id('id_new_beat_input')
+        input_box = self.get_input_box()
         self.assertEqual('Enter new beat name',
                          input_box.get_attribute('placeholder'))
 
@@ -25,7 +25,7 @@ class NewBeatTest(FunctionalTest):
 
         # superbeats still offer to enter another beat name
         # You enter second beat name and press enter
-        input_box = self.browser.find_element_by_id('id_new_beat_input')
+        input_box = self.get_input_box()
         input_box.send_keys('Saawhitelife - Grimoire')
         input_box.send_keys(Keys.ENTER)
         # Page refreshes and both beats are now in the list
@@ -43,7 +43,7 @@ class NewBeatTest(FunctionalTest):
         self.browser.get(self.live_server_url)
 
         # Saawhitelife enters his new beat title and presses enter
-        input_box = self.browser.find_element_by_id('id_new_beat_input')
+        input_box = self.get_input_box()
         input_box.send_keys('Saawhitelife - Sin City Soul')
         input_box.send_keys(Keys.ENTER)
 
@@ -67,7 +67,7 @@ class NewBeatTest(FunctionalTest):
         self.assertNotIn('Saawhitelife - Grimoire', page_text)
 
         # JayZ enters enter his beat title
-        input_box = self.browser.find_element_by_id('id_new_beat_input')
+        input_box = self.get_input_box()
         input_box.send_keys('JayZ - Dirt Off Your Shoulders')
 
         # JayZ presses enter and sees his beat on the page

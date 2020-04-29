@@ -8,7 +8,7 @@ class LayoutAndStylingTest(FunctionalTest):
         self.browser.set_window_size(1024, 768)
 
         # He sees that input field is centered
-        input_box = self.browser.find_element_by_id('id_new_beat_input')
+        input_box = self.get_input_box()
         self.assertAlmostEqual(input_box.location['x'] + input_box.size['width'] / 2,
                                512,
                                delta=10)
@@ -19,7 +19,7 @@ class LayoutAndStylingTest(FunctionalTest):
         self.wait_for_rows_in_table('1: Saawhitelife - Fata Morgana')
 
         # Saa sees that the input field is well-centered too there
-        input_box = self.browser.find_element_by_id('id_new_beat_input')
+        input_box = self.get_input_box()
         self.assertAlmostEqual(input_box.location['x'] + input_box.size['width'] / 2,
                                512,
                                delta=10)

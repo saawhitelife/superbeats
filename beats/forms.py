@@ -9,10 +9,14 @@ class BeatForm(forms.models.ModelForm):
         fields = ('title',)
         widgets = {
             'title': forms.fields.TextInput(attrs={
-                'placeholder': 'Enter beat title',
-                'class': 'form-control input-lg'
+                'placeholder': 'Enter new beat name',
+                'class': 'form-control input-lg',
             })
         }
         error_messages = {
             'title': {'required': EMPTY_BEAT_ERROR}
         }
+
+    def __init__(self, *args, **kwargs):
+        super(BeatForm, self).__init__(*args, **kwargs)
+        self.fields['title'].required = False
