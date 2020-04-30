@@ -10,16 +10,14 @@ class ItemValidationTest(FunctionalTest):
         self.browser.get(self.live_server_url)
         self.get_input_box().send_keys(Keys.ENTER)
 
-        # Pages refreshes and says it is impossible to create
-        # empty-named beats
-        self.wait_for(lambda: self.assertEqual(
-                self.browser.find_element_by_css_selector('.has-error').text,
-                'You cant submit an empty beat'
-            ))
+        # Smart browser does not let it
+        self.wait_for(lambda: self.browser.find_element_by_css_selector('#id_title:invalid'))
 
-        # Saawhitelife tries again, with a real beat name
-        # and it works
+        # Saa starts typing and error disappears
         self.get_input_box().send_keys('Saawhitelife - Fata Morgana')
+        self.wait_for(lambda: self.browser.find_element_by_css_selector('#id_title:valid'))
+
+        # Saa can send it
         self.get_input_box().send_keys(Keys.ENTER)
         self.wait_for_rows_in_table('1: Saawhitelife - Fata Morgana')
 
@@ -27,12 +25,12 @@ class ItemValidationTest(FunctionalTest):
         self.get_input_box().send_keys(Keys.ENTER)
 
         # And again it fails
-        self.wait_for(lambda: self.assertEqual(
-                self.browser.find_element_by_css_selector('.has-error').text,
-                'You cant submit an empty beat'
-            ))
-        # He can fix it anyway
+        self.wait_for_rows_in_table('1: Saawhitelife - Fata Morgana')
+        self.wait_for(lambda: self.browser.find_element_by_css_selector('#id_title:invalid'))
+
+        # He can continue typing and presses enter
         self.get_input_box().send_keys('Saawhitelife - Wah me!')
+        self.wait_for(lambda: self.browser.find_element_by_css_selector('#id_title:valid'))
         self.get_input_box().send_keys(Keys.ENTER)
         self.wait_for_rows_in_table('1: Saawhitelife - Fata Morgana')
         self.wait_for_rows_in_table('2: Saawhitelife - Wah me!')

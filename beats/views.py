@@ -14,27 +14,23 @@ def home_page(request):
 def beat_list(request, beat_list_id):
     beat_list = BeatList.objects.get(id=beat_list_id)
     error = ''
+    form = BeatForm()
     if request.method == 'POST':
-        try:
-            beat = Beat(title=request.POST['title'], beat_list=beat_list)
-            beat.full_clean()
-            beat.save()
+        form = BeatForm(data = request.POST)
+        if form.is_valid():
+            Beat.objects.create(title=request.POST['title'], beat_list=beat_list)
             return redirect(beat_list)
-        except ValidationError:
-            error = 'You cant submit an empty beat'
     return render(request, 'beats.html', {'beat_list': beat_list,
-                                          'error': error})
+                                          'form': form})
 
 
 def new_beat_list(request):
-    beat_list = BeatList.objects.create()
-    beat = Beat.objects.create(title=request.POST['title'], beat_list=beat_list)
-    try:
-        beat.full_clean()
-        beat.save()
-    except ValidationError:
-        beat_list.delete()
-        error = 'You cant submit an empty beat'
-        return render(request, 'home.html',
-                      {'error': error})
-    return redirect(beat_list)
+    form = BeatForm(request.POST)
+    if form.is_valid():
+        beat_list = BeatList.objects.create()
+        Beat.objects.create(title=request.POST['title'], beat_list=beat_list)
+        return redirect(beat_list)
+    else:
+        return render(request, 'home.html', {
+            'form': form
+        })

@@ -1,6 +1,6 @@
 from django.test import TestCase
 from beats.models import Beat, BeatList
-from beats.forms import BeatForm
+from beats.forms import BeatForm, EMPTY_BEAT_ERROR
 
 # Create your tests here.
 
@@ -23,6 +23,11 @@ class HomePageTest(TestCase):
 
 
 class BeatsViewTest(TestCase):
+    def post_invalid_input(self):
+        beat_list = BeatList.objects.create()
+        return self.client.post(f'/beat_list/{beat_list.id}/',
+                                data={'title': ''})
+
     def test_display_beats_for_correct_list(self):
         correct_beat_list = BeatList()
         correct_beat_list.save()
@@ -64,24 +69,6 @@ class BeatsViewTest(TestCase):
         self.assertEqual(new_beat.title, 'Beat for adding beats to a list test')
         self.assertEqual(new_beat.beat_list, beat_list)
 
-    def test_validations_errors_a_passed_to_template(self):
-        response = self.client.post('/beat_list/new', data={'title': ''})
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'home.html')
-        expected_error = 'You cant submit an empty beat'
-        self.assertContains(response, expected_error)
-
-    def test_validation_errors_end_up_on_beat_list_page(self):
-        beat_list = BeatList.objects.create()
-        response = self.client.post(f'/beat_list/{beat_list.id}/',
-                         data={'title': ''})
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'beats.html')
-        self.assertContains(response, 'You cant submit an empty beat')
-
-
     def test_post_redirects_to_beat_list_view(self):
         beat_list = BeatList.objects.create()
         another_beat_list = BeatList.objects.create()
@@ -90,6 +77,30 @@ class BeatsViewTest(TestCase):
                          data={'title': 'Beat for adding beats to a list test'})
 
         self.assertRedirects(response, f'/beat_list/{beat_list.id}/')
+
+    def test_view_contains_beat_form(self):
+        beat_list = BeatList.objects.create()
+        beat = Beat.objects.create(title='Beat for test', beat_list=beat_list)
+        response = self.client.get(f'/beat_list/{beat_list.id}/')
+        self.assertIsInstance(response.context['form'], BeatForm)
+        self.assertContains(response, 'name="title"')
+
+    def test_invalid_input_isnt_saved_to_db(self):
+        self.post_invalid_input()
+        self.assertEqual(Beat.objects.count(), 0)
+
+    def test_invalid_input_returns_to_beats_template(self):
+        response = self.post_invalid_input()
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'beats.html')
+
+    def test_invalid_input_passes_form_to_template(self):
+        response = self.post_invalid_input()
+        self.assertIsInstance(response.context['form'], BeatForm)
+
+    def test_invalid_input_shows_errors_on_page(self):
+        response = self.post_invalid_input()
+        self.assertContains(response, EMPTY_BEAT_ERROR)
 
 class NewBeatListTest(TestCase):
     def test_add_new_beat_POST_request(self):
@@ -107,3 +118,16 @@ class NewBeatListTest(TestCase):
         self.client.post('/beat_list/new', data={'title': ''})
         self.assertEqual(BeatList.objects.count(), 0)
         self.assertEqual(Beat.objects.count(), 0)
+
+    def test_invalid_input_renders_home_page(self):
+        response = self.client.post('/beat_list/new', data={'title': ''})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'home.html')
+
+    def test_errors_are_shown_on_home_page(self):
+        response = self.client.post('/beat_list/new', data={'title': ''})
+        self.assertContains(response, EMPTY_BEAT_ERROR)
+
+    def test_invalid_input_passes_form_to_template(self):
+        response = self.client.post('/beat_list/new', data={'title': ''})
+        self.assertIsInstance(response.context['form'], BeatForm)
