@@ -8,7 +8,6 @@ class BeatListModelTest(TestCase):
         beat_list = BeatList.objects.create()
         self.assertEqual(beat_list.get_absolute_url(), f'/beat_list/{beat_list.id}/')
 
-
 class BeatModelsTest(TestCase):
     def test_default_beat_title(self):
         beat = Beat()

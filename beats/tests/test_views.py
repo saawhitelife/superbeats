@@ -102,6 +102,17 @@ class BeatsViewTest(TestCase):
         response = self.post_invalid_input()
         self.assertContains(response, EMPTY_BEAT_ERROR)
 
+    def test_duplicates_error_ends_up_on_beat_list_page(self):
+        beat_list = BeatList.objects.create()
+        beat = Beat.objects.create(title='Beat 1', beat_list=beat_list)
+        response = self.client.post(f'/beat_list/{beat_list.id}/',
+                                    data={'title': 'Beat 1'}, follow=True)
+
+        expected_error = 'Care duplicates bro'
+        self.assertContains(response, expected_error)
+        self.assertTemplateUsed(response, 'beats.html')
+        self.assertEqual(Beat.objects.count(), 1)
+
 class NewBeatListTest(TestCase):
     def test_add_new_beat_POST_request(self):
         self.client.post('/beat_list/new', data={'title': 'Saawhitelife - Sin City Soul'})
