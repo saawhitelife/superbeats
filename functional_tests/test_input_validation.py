@@ -34,3 +34,20 @@ class ItemValidationTest(FunctionalTest):
         self.get_input_box().send_keys(Keys.ENTER)
         self.wait_for_rows_in_table('1: Saawhitelife - Fata Morgana')
         self.wait_for_rows_in_table('2: Saawhitelife - Wah me!')
+
+    def test_cannot_add_duplicates(self):
+        # Saa visits superbeats and adds his beat
+        self.browser.get(self.live_server_url)
+        self.get_input_box().send_keys('Saawhitelife - Grimoire')
+        self.get_input_box().send_keys(Keys.ENTER)
+        self.wait_for_rows_in_table('1: Saawhitelife - Grimoire')
+
+        # Not to say occasionally, but intentionally
+        # crazy producer enters same beat name again
+        self.get_input_box().send_keys('Saawhitelife - Grimoire')
+        self.get_input_box().send_keys(Keys.ENTER)
+
+        # Saa sees a message saying smth about duplicates
+        self.wait_for(lambda: self.assertEqual(
+            self.browser.find_element_by_css_selector('.has-error').text,
+            'Care duplicates, dude'))

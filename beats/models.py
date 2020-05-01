@@ -9,3 +9,10 @@ class BeatList(models.Model):
 class Beat(models.Model):
     title = models.TextField(default='')
     beat_list = models.ForeignKey(BeatList, default=None)
+
+    class Meta:
+        ordering = ('id',)
+        unique_together = ('title', 'beat_list')
+
+    def __str__(self):
+        return self.title

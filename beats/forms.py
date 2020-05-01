@@ -17,6 +17,9 @@ class BeatForm(forms.models.ModelForm):
             'title': {'required': EMPTY_BEAT_ERROR}
         }
 
+    def save(self, for_beat_list):
+        self.instance.beat_list = for_beat_list
+        return super().save()
     # def __init__(self, *args, **kwargs):
     #     super(BeatForm, self).__init__(*args, **kwargs)
     #     self.fields['title'].required = False

@@ -18,7 +18,7 @@ def beat_list(request, beat_list_id):
     if request.method == 'POST':
         form = BeatForm(data = request.POST)
         if form.is_valid():
-            Beat.objects.create(title=request.POST['title'], beat_list=beat_list)
+            form.save(for_beat_list=beat_list)
             return redirect(beat_list)
     return render(request, 'beats.html', {'beat_list': beat_list,
                                           'form': form})
@@ -28,7 +28,7 @@ def new_beat_list(request):
     form = BeatForm(request.POST)
     if form.is_valid():
         beat_list = BeatList.objects.create()
-        Beat.objects.create(title=request.POST['title'], beat_list=beat_list)
+        form.save(for_beat_list=beat_list)
         return redirect(beat_list)
     else:
         return render(request, 'home.html', {
