@@ -32,8 +32,8 @@ class BeatModelsTest(TestCase):
         beat = Beat.objects.create(title='Beat 1', beat_list=beat_list)
         with self.assertRaises(ValidationError):
             beat = Beat(title='Beat 1', beat_list=beat_list)
-            # beat.full_clean()
-            beat.save()
+            beat.full_clean()
+            # beat.save()
 
     def test_can_save_same_item_to_another_list(self):
         beat_list = BeatList.objects.create()
