@@ -2,7 +2,6 @@ from django.test import TestCase
 from beats.models import Beat, BeatList
 from django.core.exceptions import ValidationError
 
-
 class BeatListModelTest(TestCase):
     def test_get_absolute_url(self):
         beat_list = BeatList.objects.create()

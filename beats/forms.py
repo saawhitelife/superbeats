@@ -1,7 +1,9 @@
 from django import forms
 from beats.models import Beat
+from django.core.exceptions import ValidationError
 
 EMPTY_BEAT_ERROR = 'You cant submit an empty beat'
+DUPLICATE_BEAT_ERROR = 'Care duplicates bro'
 
 class BeatForm(forms.models.ModelForm):
     class Meta:
@@ -20,6 +22,14 @@ class BeatForm(forms.models.ModelForm):
     def save(self, for_beat_list):
         self.instance.beat_list = for_beat_list
         return super().save()
-    # def __init__(self, *args, **kwargs):
-    #     super(BeatForm, self).__init__(*args, **kwargs)
-    #     self.fields['title'].required = False
+
+class ExistingBeatListBeatForm(BeatForm):
+    def __init__(self, for_beat_list, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def validate_unique(self):
+        try:
+            self.instance.validate_unique()
+        except ValidationError as e:
+            e.error_dict = {'title': [DUPLICATE_BEAT_ERROR]}
+            self._update_errors(e)
