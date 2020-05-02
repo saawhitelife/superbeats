@@ -26,6 +26,7 @@ class BeatForm(forms.models.ModelForm):
 class ExistingBeatListBeatForm(BeatForm):
     def __init__(self, for_beat_list, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.instance.beat_list = for_beat_list
 
     def validate_unique(self):
         try:
@@ -33,3 +34,6 @@ class ExistingBeatListBeatForm(BeatForm):
         except ValidationError as e:
             e.error_dict = {'title': [DUPLICATE_BEAT_ERROR]}
             self._update_errors(e)
+
+    def save(self):
+        return forms.models.ModelForm.save(self)

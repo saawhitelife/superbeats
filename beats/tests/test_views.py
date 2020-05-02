@@ -1,6 +1,6 @@
 from django.test import TestCase
 from beats.models import Beat, BeatList
-from beats.forms import BeatForm, EMPTY_BEAT_ERROR
+from beats.forms import BeatForm, EMPTY_BEAT_ERROR, ExistingBeatListBeatForm, DUPLICATE_BEAT_ERROR
 from unittest import skip
 
 
@@ -81,7 +81,7 @@ class BeatsViewTest(TestCase):
         beat_list = BeatList.objects.create()
         beat = Beat.objects.create(title='Beat for test', beat_list=beat_list)
         response = self.client.get(f'/beat_list/{beat_list.id}/')
-        self.assertIsInstance(response.context['form'], BeatForm)
+        self.assertIsInstance(response.context['form'], ExistingBeatListBeatForm)
         self.assertContains(response, 'name="title"')
 
     def test_invalid_input_isnt_saved_to_db(self):
@@ -95,21 +95,19 @@ class BeatsViewTest(TestCase):
 
     def test_invalid_input_passes_form_to_template(self):
         response = self.post_invalid_input()
-        self.assertIsInstance(response.context['form'], BeatForm)
+        self.assertIsInstance(response.context['form'], ExistingBeatListBeatForm)
 
     def test_invalid_input_shows_errors_on_page(self):
         response = self.post_invalid_input()
         self.assertContains(response, EMPTY_BEAT_ERROR)
 
-    @skip
     def test_duplicates_error_ends_up_on_beat_list_page(self):
         beat_list = BeatList.objects.create()
         beat = Beat.objects.create(title='Beat 1', beat_list=beat_list)
         response = self.client.post(f'/beat_list/{beat_list.id}/',
                                     data={'title': 'Beat 1'}, follow=True)
 
-        expected_error = 'Care duplicates bro'
-        self.assertContains(response, expected_error)
+        self.assertContains(response, DUPLICATE_BEAT_ERROR)
         self.assertTemplateUsed(response, 'beats.html')
         self.assertEqual(Beat.objects.count(), 1)
 

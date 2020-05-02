@@ -1,4 +1,4 @@
-from unittest import TestCase
+from django.test import TestCase
 from beats.forms import BeatForm, EMPTY_BEAT_ERROR, ExistingBeatListBeatForm, DUPLICATE_BEAT_ERROR
 from beats.models import Beat, BeatList
 
@@ -40,5 +40,16 @@ class ExistingBeatListBeatFormTest(TestCase):
         beat_list = BeatList.objects.create()
         Beat.objects.create(title='Beat for duplicate test', beat_list=beat_list)
         form = ExistingBeatListBeatForm(data={'title': 'Beat for duplicate test'}, for_beat_list=beat_list)
+        form2 = ExistingBeatListBeatForm(data={'title': 'Beat for duplicate test 2'}, for_beat_list=beat_list)
+        form2.save()
+
         self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['text'], [DUPLICATE_BEAT_ERROR])
+        self.assertEqual(form.errors['title'], [DUPLICATE_BEAT_ERROR])
+
+    def test_form_saves_beat(self):
+        beat_list = BeatList.objects.create()
+        form = ExistingBeatListBeatForm(data={'title': 'Beat for form save test'}, for_beat_list=beat_list)
+        beat = form.save()
+        for beat in beat_list.beat_set.all():
+            print(beat.title)
+        self.assertEqual(beat, Beat.objects.all()[0])

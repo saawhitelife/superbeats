@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from beats.models import Beat, BeatList
-from beats.forms import BeatForm
+from beats.forms import BeatForm, ExistingBeatListBeatForm
 from django.core.exceptions import ValidationError
 
 
@@ -13,12 +13,11 @@ def home_page(request):
 
 def beat_list(request, beat_list_id):
     beat_list = BeatList.objects.get(id=beat_list_id)
-    error = ''
-    form = BeatForm()
+    form = ExistingBeatListBeatForm(for_beat_list=beat_list)
     if request.method == 'POST':
-        form = BeatForm(data = request.POST)
+        form = ExistingBeatListBeatForm(data=request.POST, for_beat_list=beat_list)
         if form.is_valid():
-            form.save(for_beat_list=beat_list)
+            form.save()
             return redirect(beat_list)
     return render(request, 'beats.html', {'beat_list': beat_list,
                                           'form': form})
