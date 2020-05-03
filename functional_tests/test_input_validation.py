@@ -62,6 +62,7 @@ class ItemValidationTest(FunctionalTest):
         self.get_input_box().send_keys(Keys.ENTER)
         self.wait_for_rows_in_table('1: Saawhitelife - Catharsis')
         self.get_input_box().send_keys('Saawhitelife - Catharsis')
+        self.get_input_box().send_keys(Keys.ENTER)
         self.wait_for(lambda: self.assertTrue(
             self.get_error_element().is_displayed()
         ))
