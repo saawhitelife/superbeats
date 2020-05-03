@@ -17,12 +17,12 @@
 <script src="../beats.js"></script>
 <script>
 QUnit.test("error message disappears after keypress", function (assert) {
-    initialize();
+    window.Superbeats.initialize();
     $('input[name="title"]').trigger('keypress');
     assert.equal($('.has-error').is(':visible'), false);
 });
 QUnit.test("error messages are displayed if no keypress", function (assert) {
-    initialize();
+    window.Superbeats.initialize();
     assert.equal($('.has-error').is(':visible'), true);
 });
 </script>
