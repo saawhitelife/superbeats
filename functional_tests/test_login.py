@@ -4,7 +4,7 @@ from selenium.webdriver.common.keys import Keys
 import re
 
 TEST_EMAIL = 'saawhitelife@gmail.com'
-SUBJECT = 'Link for superbeats login'
+SUBJECT = 'Superbeats login link'
 
 class LoginTest(FunctionalTest):
     def test_login(self):
@@ -18,7 +18,7 @@ class LoginTest(FunctionalTest):
         self.browser.find_element_by_id('id_email').send_keys(Keys.ENTER)
 
         self.wait_for(lambda: self.assertIn(
-            'Check your email',
+            'We\'ve sent an email for login. Kindly check your mail for the link.',
             self.browser.find_element_by_tag_name('body').text
         ))
 

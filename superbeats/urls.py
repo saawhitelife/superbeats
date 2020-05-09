@@ -1,5 +1,6 @@
 from beats import views as beat_views
 from beats import urls as beat_urls
+from accounts import urls as account_urls
 """superbeats URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -21,5 +22,6 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^$', beat_views.home_page, name='home'),
     url(r'^beat_list/', include(beat_urls)),
+    url(r'^accounts/', include(account_urls, namespace='accounts'))
     # url(r'^admin/', admin.site.urls),
 ]
