@@ -36,6 +36,10 @@ class LoginTest(FunctionalTest):
         self.browser.get(url)
 
         # Wow! Logged in!
-        self.wait_for(lambda: self.browser.find_element_by_link_text('Logout'))
-        navbar = self.browser.find_element_by_css_selector('.navbar')
-        self.assertIn(TEST_EMAIL, navbar.text)
+        self.wait_for_user_to_login(TEST_EMAIL)
+
+        # Now he quits superbeats
+        self.browser.find_element_by_link_text('Logout').click()
+
+        # Done quitting
+        self.wait_for_user_to_logout(TEST_EMAIL)

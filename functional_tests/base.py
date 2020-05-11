@@ -20,6 +20,18 @@ class FunctionalTest(StaticLiveServerTestCase):
     def get_input_box(self):
         return self.browser.find_element_by_id('id_title')
 
+    def wait_for_user_to_login(self, email):
+        self.wait_for(lambda: self.browser.\
+                      find_element_by_link_text('Logout'))
+
+        navbar = self.browser.find_element_by_css_selector('.navbar')
+        self.assertIn(email, navbar.text)
+
+    def wait_for_user_to_logout(self, email):
+        self.wait_for(lambda: self.browser.\
+                      find_element_by_id('id_email'))
+        navbar = self.browser.find_element_by_css_selector('.navbar')
+        self.assertNotIn(email, navbar.text)
 
     def wait_for_rows_in_table(self, text):
         start_time = time.time()
