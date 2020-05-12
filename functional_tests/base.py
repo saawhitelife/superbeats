@@ -17,41 +17,39 @@ class FunctionalTest(StaticLiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
+    def wait(fn):
+        def wrap(*args, **kwargs):
+            start_time = time.time()
+            while True:
+                try:
+                    return fn(*args, **kwargs)
+                except(AssertionError, WebDriverException) as e:
+                    if time.time() - start_time > MAX_WAIT:
+                        raise e
+                    time.sleep(0.5)
+        return wrap
+
+    @wait
+    def wait_for(self, fn):
+        return fn()
+
     def get_input_box(self):
         return self.browser.find_element_by_id('id_title')
 
+    @wait
     def wait_for_user_to_login(self, email):
-        self.wait_for(lambda: self.browser.\
-                      find_element_by_link_text('Logout'))
-
+        self.browser.find_element_by_link_text('Logout')
         navbar = self.browser.find_element_by_css_selector('.navbar')
         self.assertIn(email, navbar.text)
 
+    @wait
     def wait_for_user_to_logout(self, email):
-        self.wait_for(lambda: self.browser.\
-                      find_element_by_id('id_email'))
+        self.browser.find_element_by_id('id_email')
         navbar = self.browser.find_element_by_css_selector('.navbar')
         self.assertNotIn(email, navbar.text)
 
+    @wait
     def wait_for_rows_in_table(self, text):
-        start_time = time.time()
-        while True:
-            try:
-                table = self.browser.find_element_by_id('id_beats_table')
-                rows = table.find_elements_by_tag_name('tr')
-                self.assertIn(text, [row.text for row in rows])
-                return
-            except(AssertionError, WebDriverException) as e:
-                if time.time() - start_time > MAX_WAIT:
-                    raise e
-                time.sleep(0.5)
-
-    def wait_for(self, fn):
-        start_time = time.time()
-        while True:
-            try:
-                return fn()
-            except(AssertionError, WebDriverException) as e:
-                if time.time() - start_time > MAX_WAIT:
-                    raise e
-                time.sleep(0.5)
+            table = self.browser.find_element_by_id('id_beats_table')
+            rows = table.find_elements_by_tag_name('tr')
+            self.assertIn(text, [row.text for row in rows])
