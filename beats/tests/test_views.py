@@ -1,7 +1,10 @@
 from django.test import TestCase
 from beats.models import Beat, BeatList
 from beats.forms import BeatForm, EMPTY_BEAT_ERROR, ExistingBeatListBeatForm, DUPLICATE_BEAT_ERROR
+from django.contrib.auth import get_user_model
 from unittest import skip
+
+User = get_user_model()
 
 
 class HomePageTest(TestCase):
@@ -143,5 +146,21 @@ class NewBeatListTest(TestCase):
 
 class MyBeatListTest(TestCase):
     def test_my_beat_list_url_renders_my_beat_list_template(self):
-        response = self.client.get('/beat_list/users/a@b/')
+        User.objects.create(email='a@b.c')
+        response = self.client.get('/beat_list/users/a@b.c/')
         self.assertTemplateUsed(response, 'my_beat_lists.html')
+
+    def test_my_beat_lists_passes_correct_owner_to_template(self):
+        User.objects.create(email='wrong@email.com')
+        correct_user = User.objects.create(email='correct@email.com')
+        response = self.client.get('/beat_list/users/correct@email.com/')
+        self.assertEqual(response.context['owner'], correct_user)
+
+    def test_beat_list_is_saved_for_authenticated_user(self):
+        user = User.objects.create(email='a@b.c')
+        self.client.force_login(user)
+        response = self.client.post('/beat_list/new', data={'title': 'Saawhitelife - Catharsis'})
+        beat_list = BeatList.objects.first()
+        self.assertEqual(beat_list.owner, user)
+
+

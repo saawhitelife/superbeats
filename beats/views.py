@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from beats.models import Beat, BeatList
 from beats.forms import BeatForm, ExistingBeatListBeatForm
 from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 def home_page(request):
@@ -26,7 +28,9 @@ def beat_list(request, beat_list_id):
 def new_beat_list(request):
     form = BeatForm(request.POST)
     if form.is_valid():
-        beat_list = BeatList.objects.create()
+        beat_list = BeatList()
+        beat_list.owner = request.user
+        beat_list.save()
         form.save(for_beat_list=beat_list)
         return redirect(beat_list)
     else:
@@ -35,7 +39,11 @@ def new_beat_list(request):
         })
 
 def my_beat_lists(request, email):
+    user = User.objects.get(email=email)
     return render(
         request,
-        'my_beat_lists.html'
+        'my_beat_lists.html',
+        {
+            'owner': user
+        }
     )
