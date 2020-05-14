@@ -27,6 +27,7 @@ eg, on Ubuntu:
 
  * see gunicorn.systemd.service.template
  * replace SITENAME with a domain name
+ * replace PASSWORDHERE with email password used for sending emails
  * note paths
 
 ## Directory structure

@@ -19,6 +19,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^(\d+)/$', views.beat_list, name='beat_list'),
-    url(r'^new$', views.new_beat_list, name='new_beat_list')
+    url(r'^new$', views.new_beat_list, name='new_beat_list'),
+    url(r'^users/(.+)/', views.my_beat_lists, name='my_beat_lists')
     # url(r'^admin/', admin.site.urls),
 ]

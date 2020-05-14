@@ -140,3 +140,8 @@ class NewBeatListTest(TestCase):
     def test_invalid_input_passes_form_to_template(self):
         response = self.client.post('/beat_list/new', data={'title': ''})
         self.assertIsInstance(response.context['form'], BeatForm)
+
+class MyBeatListTest(TestCase):
+    def test_my_beat_list_url_renders_my_beat_list_template(self):
+        response = self.client.get('/beat_list/users/a@b/')
+        self.assertTemplateUsed(response, 'my_beat_lists.html')

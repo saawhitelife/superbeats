@@ -14,9 +14,7 @@ class LayoutAndStylingTest(FunctionalTest):
                                delta=10)
         # Saawhitelife enters his beat title and gets onto his
         # beat list page
-        input_box.send_keys('Saawhitelife - Fata Morgana')
-        input_box.send_keys(Keys.ENTER)
-        self.wait_for_rows_in_table('1: Saawhitelife - Fata Morgana')
+        self.add_beat_to_beat_list('Saawhitelife - Fata Morgana')
 
         # Saa sees that the input field is well-centered too there
         input_box = self.get_input_box()

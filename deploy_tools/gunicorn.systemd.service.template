@@ -5,8 +5,11 @@ Description=Gunicorn server for SITENAME
 Restart=on-failure
 User=osboxes
 WorkingDirectory=/home/osboxes/sites/SITENAME/source
+ENVIRONMENT=EMAIL_PASSWWORD=PASSWORDHERE
 ExecStart=/home/osboxes/sites/SITENAME/virtualenv/bin/gunicorn \
             --bind unix:/tmp/SITENAME.socket \
+            --access-logfile ../access.log \
+            --error-logfile ../error.log \
             superbeats.wsgi:application
 
 [Install]

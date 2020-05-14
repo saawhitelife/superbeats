@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block header_text %}My Beatlists{% endblock %}
+
+{% block beat_list_form %}{% endblock %}
+
+{% block extra_content %}
+    <h2>{{ owner.email }}'s beats</h2>
+    <ul>
+        {% for beat_list in owner.beat_list_set.all %}
+            <li>
+                <a href="{{ beat_list.get_absolute_url }}">{{ beat_list.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

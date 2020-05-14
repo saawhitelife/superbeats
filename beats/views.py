@@ -33,3 +33,9 @@ def new_beat_list(request):
         return render(request, 'home.html', {
             'form': form
         })
+
+def my_beat_lists(request, email):
+    return render(
+        request,
+        'my_beat_lists.html'
+    )

@@ -40,9 +40,7 @@ class ItemValidationTest(FunctionalTest):
     def test_cannot_add_duplicates(self):
         # Saa visits superbeats and adds his beat
         self.browser.get(self.live_server_url)
-        self.get_input_box().send_keys('Saawhitelife - Grimoire')
-        self.get_input_box().send_keys(Keys.ENTER)
-        self.wait_for_rows_in_table('1: Saawhitelife - Grimoire')
+        self.add_beat_to_beat_list('Saawhitelife - Grimoire')
 
         # Not to say occasionally, but intentionally
         # crazy producer enters same beat name again
@@ -58,9 +56,7 @@ class ItemValidationTest(FunctionalTest):
     def test_error_messages_disappear_on_input(self):
         # Saa starts a new list and raises a frontend validation error
         self.browser.get(self.live_server_url)
-        self.get_input_box().send_keys('Saawhitelife - Catharsis')
-        self.get_input_box().send_keys(Keys.ENTER)
-        self.wait_for_rows_in_table('1: Saawhitelife - Catharsis')
+        self.add_beat_to_beat_list('Saawhitelife - Catharsis')
         self.get_input_box().send_keys('Saawhitelife - Catharsis')
         self.get_input_box().send_keys(Keys.ENTER)
         self.wait_for(lambda: self.assertTrue(

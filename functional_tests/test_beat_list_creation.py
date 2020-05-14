@@ -43,12 +43,8 @@ class NewBeatTest(FunctionalTest):
         self.browser.get(self.live_server_url)
 
         # Saawhitelife enters his new beat title and presses enter
-        input_box = self.get_input_box()
-        input_box.send_keys('Saawhitelife - Sin City Soul')
-        input_box.send_keys(Keys.ENTER)
-
         # Saawhitelife sees his beat in the list on the page
-        self.wait_for_rows_in_table('1: Saawhitelife - Sin City Soul')
+        self.add_beat_to_beat_list('Saawhitelife - Sin City Soul')
 
         # JayZ sees that browser generated a new URL for him
         saawhitelife_beat_list_url = self.browser.current_url
@@ -67,12 +63,7 @@ class NewBeatTest(FunctionalTest):
         self.assertNotIn('Saawhitelife - Grimoire', page_text)
 
         # JayZ enters enter his beat title
-        input_box = self.get_input_box()
-        input_box.send_keys('JayZ - Dirt Off Your Shoulders')
-
-        # JayZ presses enter and sees his beat on the page
-        input_box.send_keys(Keys.ENTER)
-        self.wait_for_rows_in_table('1: JayZ - Dirt Off Your Shoulders')
+        self.add_beat_to_beat_list('JayZ - Dirt Off Your Shoulders')
 
         # JayZ sees that superbeats generated URL for his list of beats
         jayz_beat_list_url = self.browser.current_url
