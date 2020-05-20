@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from beats.models import Beat, BeatList
-from beats.forms import BeatForm, ExistingBeatListBeatForm
+from beats.forms import BeatForm, ExistingBeatListBeatForm, NewBeatListForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -26,17 +26,14 @@ def beat_list(request, beat_list_id):
 
 
 def new_beat_list(request):
-    form = BeatForm(request.POST)
+    form = NewBeatListForm(data=request.POST)
     if form.is_valid():
-        beat_list = BeatList()
-        beat_list.owner = request.user
-        beat_list.save()
-        form.save(for_beat_list=beat_list)
+        beat_list = form.save(owner=request.user)
         return redirect(beat_list)
-    else:
-        return render(request, 'home.html', {
-            'form': form
-        })
+    return render(request, 'home.html', {
+        'form': form
+    })
+
 
 def my_beat_lists(request, email):
     user = User.objects.get(email=email)

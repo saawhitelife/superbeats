@@ -1,11 +1,45 @@
 from django.test import TestCase
 from beats.models import Beat, BeatList
 from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class BeatListModelTest(TestCase):
     def test_get_absolute_url(self):
         beat_list = BeatList.objects.create()
         self.assertEqual(beat_list.get_absolute_url(), f'/beat_list/{beat_list.id}/')
+
+    def test_create_new_creates_beat_list_and_first_beat(self):
+        beat_list = BeatList.create_new(first_beat_title='Saawhitelife - Grimoire')
+        new_beat = Beat.objects.first()
+        self.assertEqual(new_beat.title, 'Saawhitelife - Grimoire')
+        new_beat_list = BeatList.objects.first()
+        self.assertEqual(new_beat.beat_list, new_beat_list)
+
+    def test_create_new_optionally_saves_owner(self):
+        user = User.objects.create()
+        BeatList.create_new(first_beat_title='Saawhitelife - Catharsis',
+                            owner=user)
+        new_list = BeatList.objects.first()
+        self.assertEqual(new_list.owner, user)
+
+    def test_beat_lists_can_have_owners(self):
+        BeatList(owner=User())
+
+    def test_beat_list_owner_is_optional(self):
+        BeatList().full_clean()
+
+    def test_create_returns_new_list_object(self):
+        created = BeatList.create_new(first_beat_title='Saawhitelife - Catharsis')
+        beat_list = BeatList.objects.first()
+        self.assertEqual(created, beat_list)
+
+    def test_first_beat_title_in_beat_list_will_be_beat_list_name(self):
+        beat_list = BeatList.objects.create()
+        Beat.objects.create(title='Saawhitelife - Fata Morgana', beat_list=beat_list)
+        Beat.objects.create(title='Saawhitelife - Catharsis', beat_list=beat_list)
+        self.assertEqual(beat_list.name, 'Saawhitelife - Fata Morgana')
 
 class BeatModelsTest(TestCase):
     def test_default_beat_title(self):

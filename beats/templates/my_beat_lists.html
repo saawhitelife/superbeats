@@ -6,7 +6,7 @@
 {% block extra_content %}
     <h2>{{ owner.email }}'s beats</h2>
     <ul>
-        {% for beat_list in owner.beat_list_set.all %}
+        {% for beat_list in owner.beat_lists.all %}
             <li>
                 <a href="{{ beat_list.get_absolute_url }}">{{ beat_list.name }}</a>
             </li>

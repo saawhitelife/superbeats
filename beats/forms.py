@@ -1,5 +1,5 @@
 from django import forms
-from beats.models import Beat
+from beats.models import Beat, BeatList
 from django.core.exceptions import ValidationError
 
 EMPTY_BEAT_ERROR = 'You cant submit an empty beat'
@@ -37,3 +37,11 @@ class ExistingBeatListBeatForm(BeatForm):
 
     def save(self):
         return forms.models.ModelForm.save(self)
+
+class NewBeatListForm(BeatForm):
+    def save(self, owner):
+        if owner.is_authenticated:
+            return BeatList.create_new(first_beat_title=self.cleaned_data['title'],
+                                owner=owner)
+        else:
+            return BeatList.create_new(first_beat_title=self.cleaned_data['title'])

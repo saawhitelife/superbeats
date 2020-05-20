@@ -3,6 +3,10 @@ from beats.models import Beat, BeatList
 from beats.forms import BeatForm, EMPTY_BEAT_ERROR, ExistingBeatListBeatForm, DUPLICATE_BEAT_ERROR
 from django.contrib.auth import get_user_model
 from unittest import skip
+from unittest.mock import patch, Mock
+from django.http import HttpRequest
+from beats.views import new_beat_list
+import unittest
 
 User = get_user_model()
 
@@ -114,35 +118,78 @@ class BeatsViewTest(TestCase):
         self.assertTemplateUsed(response, 'beats.html')
         self.assertEqual(Beat.objects.count(), 1)
 
-class NewBeatListTest(TestCase):
+class NewBeatListViewIntegratedTest(TestCase):
     def test_add_new_beat_POST_request(self):
         self.client.post('/beat_list/new', data={'title': 'Saawhitelife - Sin City Soul'})
         self.assertEqual(Beat.objects.count(), 1)
         new_beat = Beat.objects.first()
         self.assertEqual(new_beat.title, 'Saawhitelife - Sin City Soul')
 
-    def test_redirects_after_post_request(self):
-        response = self.client.post('/beat_list/new', data={'title': 'Saawhitelife - Sin City Soul'})
-        new_beat_list = BeatList.objects.first()
-        self.assertRedirects(response, f'/beat_list/{new_beat_list.id}/')
-
-    def test_empty_items_arent_saved(self):
-        self.client.post('/beat_list/new', data={'title': ''})
+    def test_no_items_saved_on_invalid_input_and_errors_are_shown(self):
+        response = self.client.post('/beat_list/new', data={'title': ''})
         self.assertEqual(BeatList.objects.count(), 0)
-        self.assertEqual(Beat.objects.count(), 0)
-
-    def test_invalid_input_renders_home_page(self):
-        response = self.client.post('/beat_list/new', data={'title': ''})
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'home.html')
-
-    def test_errors_are_shown_on_home_page(self):
-        response = self.client.post('/beat_list/new', data={'title': ''})
         self.assertContains(response, EMPTY_BEAT_ERROR)
 
-    def test_invalid_input_passes_form_to_template(self):
-        response = self.client.post('/beat_list/new', data={'title': ''})
-        self.assertIsInstance(response.context['form'], BeatForm)
+    def test_beat_list_is_saved_for_authenticated_user(self):
+        user = User.objects.create(email='a@b.c')
+        self.client.force_login(user)
+        self.client.post('/beat_list/new', data={'title': 'Saawhitelife - Catharsis'})
+        beat_list = BeatList.objects.first()
+        self.assertEqual(beat_list.owner, user)
+
+@patch('beats.views.NewBeatListForm')
+class NewBeatListViewUnitTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.request = HttpRequest()
+        self.request.POST['title'] = 'Saawhitelife - Grimoire'
+        self.request.user = Mock()
+
+    def test_view_passes_post_data_to_NewBeatListForm(self, mockNewBeatListForm):
+        new_beat_list(self.request)
+        mockNewBeatListForm.assert_called_once_with(data=self.request.POST)
+
+    def test_form_saves_owner_if_valid(self, mockNewBeatListForm):
+        mock_form = mockNewBeatListForm.return_value
+        mock_form.is_valid.return_value = True
+        new_beat_list(self.request)
+        mock_form.save.assert_called_once_with(owner=self.request.user)
+
+    @patch('beats.views.redirect')
+    def test_redirect_to_object_saved_by_form_if_valid(self,
+        mockRedirect,
+        mockNewBeatListForm
+    ):
+        mock_form = mockNewBeatListForm.return_value
+        mock_form.is_valid.return_value = True
+
+        response = new_beat_list(self.request)
+
+        self.assertEqual(mockRedirect.return_value, response)
+        mockRedirect.assert_called_once_with(mock_form.save.return_value)
+
+    @patch('beats.views.render')
+    def test_redirects_to_home_page_if_form_is_invalid(self,
+        mockRender,
+        mockNewBeatListForm
+    ):
+        mock_form = mockNewBeatListForm.return_value
+        mock_form.is_valid.return_value = False
+
+        response = new_beat_list(self.request)
+        self.assertEqual(response, mockRender.return_value)
+        mockRender.assert_called_once_with(
+            self.request, 'home.html', {'form': mock_form}
+        )
+
+    def test_form_does_not_save_if_is_not_valid(self,
+        mockNewBeatListForm
+    ):
+        mock_form = mockNewBeatListForm.return_value
+        mock_form.is_valid.return_value = False
+        new_beat_list(self.request)
+        self.assertFalse(mock_form.save.called)
+
+
 
 class MyBeatListTest(TestCase):
     def test_my_beat_list_url_renders_my_beat_list_template(self):
@@ -155,12 +202,5 @@ class MyBeatListTest(TestCase):
         correct_user = User.objects.create(email='correct@email.com')
         response = self.client.get('/beat_list/users/correct@email.com/')
         self.assertEqual(response.context['owner'], correct_user)
-
-    def test_beat_list_is_saved_for_authenticated_user(self):
-        user = User.objects.create(email='a@b.c')
-        self.client.force_login(user)
-        response = self.client.post('/beat_list/new', data={'title': 'Saawhitelife - Catharsis'})
-        beat_list = BeatList.objects.first()
-        self.assertEqual(beat_list.owner, user)
 
 
