@@ -9,9 +9,14 @@ from selenium.webdriver.common.keys import Keys
 MAX_WAIT = 10
 
 
+
 class FunctionalTest(StaticLiveServerTestCase):
     def setUp(self):
-        self.browser = webdriver.Firefox(executable_path='/usr/local/bin/geckodriver')
+        self.options = webdriver.FirefoxOptions()
+        self.gecko = '/usr/local/bin/geckodriver'
+        self.options.add_argument('-headless')
+        browser = webdriver.Firefox(executable_path=self.gecko, firefox_options=self.options)
+        # self.browser = webdriver.Firefox(executable_path='/usr/local/bin/geckodriver')
         self.staging_server = os.environ.get('STAGING_SERVER')
         if self.staging_server:
             self.live_server_url = 'http://' + self.staging_server

@@ -54,7 +54,7 @@ class NewBeatTest(FunctionalTest):
 
         # Now JayZ comes to visit superbeats
         self.browser.quit()
-        self.browser = webdriver.Firefox(executable_path='/usr/local/bin/geckodriver')
+        self.browser = webdriver.Firefox(executable_path=self.gecko, firefox_options=self.options)
         self.browser.get(self.live_server_url)
 
         # JayZ doesnt see Saawhitelife's beats
