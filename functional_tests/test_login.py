@@ -56,7 +56,6 @@ class LoginTest(FunctionalTest):
             'We\'ve sent an email for login. Kindly check your mail for the link.',
             self.browser.find_element_by_tag_name('body').text
         ))
-
         # Saa gots the email and finds a link over there
         body = self.wait_for_email(test_email, SUBJECT)
         self.assertIn('Please use this url for login:', body)

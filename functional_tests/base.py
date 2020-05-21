@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 import time
+from datetime import datetime
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 import os
 from .server_tools import reset_database
@@ -8,7 +9,8 @@ from selenium.webdriver.common.keys import Keys
 
 MAX_WAIT = 10
 
-
+SCREEN_DUMP_LOCATION = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'screendumps')
 
 class FunctionalTest(StaticLiveServerTestCase):
     def setUp(self):
@@ -16,14 +18,46 @@ class FunctionalTest(StaticLiveServerTestCase):
         self.gecko = '/usr/local/bin/geckodriver'
         self.options.add_argument('-headless')
         self.browser = webdriver.Firefox(executable_path=self.gecko, firefox_options=self.options)
-        # self.browser = webdriver.Firefox(executable_path='/usr/local/bin/geckodriver')
         self.staging_server = os.environ.get('STAGING_SERVER')
         if self.staging_server:
             self.live_server_url = 'http://' + self.staging_server
             reset_database(self.staging_server)
 
     def tearDown(self):
+        if self._test_has_failed():
+            if not os.path.exists(SCREEN_DUMP_LOCATION):
+                os.makedirs(SCREEN_DUMP_LOCATION)
+            for ix, handle in enumerate(self.browser.window_handles):
+                self._windowid = ix
+                self.browser.switch_to_window(handle)
+                self.take_screenshot()
+                self.dump_html()
         self.browser.quit()
+        super().tearDown()
+
+    def _get_filename(self):
+        timestamp = datetime.now().isoformat().replace(':', '.')[:19]
+        return '{folder}/{classname}.{method}-window{windowid}-{timestamp}'.\
+            format(
+            folder=SCREEN_DUMP_LOCATION,
+            classname=self.__class__.__name__,
+            method=self._testMethodName,
+            windowid=self._windowid,
+            timestamp=timestamp
+        )
+
+    def take_screenshot(self):
+        filename = self._get_filename() + '.png'
+        print('screenshotting to', filename)
+        self.browser.get_screenshot_as_file(filename)
+
+    def dump_html(self):
+        filename = self._get_filename() + '.html'
+        print('dumping page to', filename)
+        with open(filename, 'w') as f:
+            f.write(self.browser.page_source)
+    def _test_has_failed(self):
+        return any(error for (method, error) in self._outcome.errors)
 
     def add_beat_to_beat_list(self, beat_title):
         num_rows = len(self.browser.find_elements_by_css_selector('#id_beats_table tr'))
